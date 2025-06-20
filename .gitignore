@@ -1,0 +1,58 @@
+# ===========================
+# Java - Maven - IDEs
+# ===========================
+
+# Compilação
+/target/
+build/
+
+# Maven Wrapper
+.mvn/wrapper/maven-wrapper.jar
+
+# Evitar incluir pastas de build dentro de src/
+!**/src/main/**/target/
+!**/src/test/**/target/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+# ===========================
+# IDEs
+# ===========================
+
+# Spring Tool Suite (STS)
+.apt_generated/
+.classpath
+.factorypath
+.project
+.settings/
+.springBeans
+.sts4-cache/
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# NetBeans
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+# Visual Studio Code
+.vscode/
+
+# ===========================
+# Sistema Operacional
+# ===========================
+
+# Arquivos do macOS
+.DS_Store
+
+# Arquivos de backup do Linux
+*~
+
+# Thumbs.db para Windows
+Thumbs.db
