@@ -64,3 +64,12 @@ Thumbs.db
 # Arquivos de variáveis de ambiente
 .env
 .env.*
+
+# Arquivos de relatórios de testes
+*.log
+*.tmp
+
+# Lombok cache
+.lombok/
+
+
