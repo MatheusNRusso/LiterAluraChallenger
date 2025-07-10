@@ -4,13 +4,12 @@ import br.com.mylocal.literalura.dto.AuthorDto;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.ArrayList;
-import java.util.List;
-
-@Entity
+@Entity(name = "Author")
 @Table(name = "authors")
 @AllArgsConstructor
-@NoArgsConstructor @Getter @Setter
+@NoArgsConstructor
+@Getter
+@Setter
 @EqualsAndHashCode(of = "id")
 public class Author {
 
@@ -18,7 +17,7 @@ public class Author {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    public String name;
+    private String name;
 
     @Column(name = "birth_year", nullable = false)
     private int birthYear;
@@ -26,15 +25,24 @@ public class Author {
     @Column(name = "death_year", nullable = false)
     private int deathYear;
 
-    @ManyToMany(mappedBy = "authors")
-    private List<Book> book = new ArrayList<>();
-    @Override
-    public String toString() {
-        return String.format("Author{name='%s', birth=%d, death=%d}", name, birthYear, deathYear);
-    }
+    @ManyToOne
+    @JoinColumn(name = "book_id")
+    private Book book;
+
     public Author(AuthorDto authorDto) {
         this.name = authorDto.name();
         this.birthYear = authorDto.birthYear();
         this.deathYear = authorDto.deathYear();
+    }
+
+    @Override
+    public String toString() {
+        return String.format("""
+                 Author{
+                        name=%s,
+                        birth=%d, 
+                        death=%d
+                }""",name, birthYear, deathYear);
+
     }
 }
