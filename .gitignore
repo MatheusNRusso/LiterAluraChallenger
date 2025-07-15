@@ -72,4 +72,8 @@ Thumbs.db
 # Lombok cache
 .lombok/
 
+# Arquivos exportados gerados em runtime
+/export/
+
+
 

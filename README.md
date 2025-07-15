@@ -1,43 +1,91 @@
-# 🚀 Projeto Java Backend - Integração com API e Banco de Dados
+---
+# 📘 Challenge Literalura
 
-Este projeto tem como objetivo simular um cenário real de desenvolvimento backend em Java, onde uma aplicação precisa buscar dados de uma API externa, processá-los e armazená-los em um banco de dados relacional para posterior consulta e exibição aos usuários.
+Este projeto Java Spring Boot integra dados da [API do Projeto Gutenberg](https://gutendex.com/) e tem como objetivo permitir que usuários consultem, filtrem e exportem informações sobre livros e autores clássicos da literatura mundial.
 
-## 💡 Sobre o Projeto
+A aplicação oferece funcionalidades completas, incluindo persistência no banco de dados, exportação de dados em múltiplos formatos e geração de estatísticas literárias, tudo acessível por meio de um menu interativo no terminal.
 
-A aplicação realiza o **consumo de uma API pública**, analisa as informações recebidas em formato **JSON**, e insere os dados tratados em um **banco de dados** (como MySQL ou PostgreSQL). Em seguida, a aplicação permite **consultar essas informações** e exibi-las de maneira organizada, por meio de um sistema simples de apresentação ao usuário.
+---
 
-Esse projeto visa reforçar os seguintes pontos fundamentais do desenvolvimento backend:
+## ✨ Funcionalidades
 
-- Comunicação com APIs externas via HTTP.
-- Manipulação de dados em JSON.
-- Mapeamento e persistência de dados com JPA/Hibernate.
-- Organização da lógica de negócio em camadas.
-- Boas práticas de codificação e separação de responsabilidades.
+- 🔍 Buscar livros por título
+- 📚 Listar livros registrados
+- 👤 Listar autores registrados
+- 📆 Filtrar autores por intervalo de nascimento
+- 🌍 Listar livros por idioma
+- ⭐ Top 5 livros mais baixados
+- 🔠 Buscar autores por nome
+- 📤 Exportar dados (livros/autores) em **JSON** ou **CSV**
+- 📊 Exibir estatísticas como:
+    - Total de livros e autores
+    - Média de downloads por idioma
+    - Livro mais baixado por idioma
+    - Autor com mais livros
+    - Expectativa de vida média dos autores
 
-## 🧠 O que você vai praticar
+---
 
-- Criação de um projeto Java estruturado.
-- Integração com APIs externas usando bibliotecas como `HttpClient`, `Retrofit`, ou `RestTemplate`.
-- Desserialização de JSON usando `Jackson` ou `Gson`.
-- Persistência de dados em banco usando `JPA` com Spring Data.
-- Desenvolvimento orientado a tarefas com apoio do Trello.
+## 🛠 Tecnologias utilizadas
 
-## 🛠️ Ferramentas sugeridas
+- Java 17
+- Spring Boot 3
+- Maven
+- JPA + Hibernate
+- MariaDB (ou qualquer banco relacional)
+- Jackson (JSON)
+- OpenCSV (CSV)
+- Flyway (migrations)
 
-- **Java 17+**
-- **Spring Boot**
-- **Maven ou Gradle**
-- **Banco de dados relacional (MySQL, PostgreSQL ou H2)**
-- **Postman ou Insomnia (para testes de API)**
+---
 
-## 📈 Objetivo final
+## 🚀 Como executar o projeto
 
-Desenvolver uma aplicação funcional que demonstra sua capacidade de:
+1. Clone o repositório:
+   ```bash
+   git clone https://github.com/MatheusNRusso/LiterAluraChallenger.git
+````
 
-- Integrar serviços externos.
-- Processar e armazenar dados de forma eficiente.
-- Organizar e exibir informações com clareza.
-- Trabalhar de forma autônoma e organizada com metodologia ágil.
+2. Configure o banco de dados em `src/main/resources/application.properties`.
 
+3. Execute o projeto:
 
+   ```bash
+   ./mvnw spring-boot:run
+   ```
 
+4. Acompanhe as instruções no terminal para interagir com o menu.
+
+---
+
+## 🗂 Estrutura
+
+```
+📁 src
+ ┣ 📂 main
+ ┃ ┣ 📂 java
+ ┃ ┃ ┗━━ br.com.mylocal.literalura
+ ┃ ┃     ┣ 📁 model          ← Entidades Book e Author
+ ┃ ┃     ┣ 📁 service        ← Serviços de negócio, exportação e estatísticas
+ ┃ ┃     ┣ 📁 repository     ← Interfaces JPA para acesso ao banco
+ ┃ ┃     ┣ 📁 dto            ← Data Transfer Objects para exportação
+ ┃ ┃     ┣ 📁 principal      ← Classe Principal com menu e fluxo principal
+ ┃ ┗ 📂 resources
+ ┃   ┗━━ application.properties
+```
+
+---
+
+## 📎 Link do repositório
+
+🔗 [https://github.com/MatheusNRusso/LiterAluraChallenger](https://github.com/MatheusNRusso/LiterAluraChallenger)
+
+---
+
+## 🙌 Contribuição
+
+Este projeto foi desenvolvido como parte do Challenge da formação **Java Backend da Alura**.
+
+```
+
+---
