@@ -2,13 +2,14 @@ package br.com.mylocal.literalura.model;
 
 import br.com.mylocal.literalura.dto.AuthorDto;
 import br.com.mylocal.literalura.dto.BookDto;
+import br.com.mylocal.literalura.model.Author;
+import br.com.mylocal.literalura.model.Language;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-
 
 @Entity(name = "Book")
 @Table(name = "books")
@@ -24,10 +25,12 @@ public class Book {
     private Long id;
 
     private String title;
-
     private int downloadCount;
 
-    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "book_authors",
+            joinColumns = @JoinColumn(name = "book_id"),
+            inverseJoinColumns = @JoinColumn(name = "author_id"))
     private List<Author> authors = new ArrayList<>();
 
     @ElementCollection(fetch = FetchType.EAGER)
@@ -36,38 +39,24 @@ public class Book {
     @Column(name = "language")
     private List<Language> languages = new ArrayList<>();
 
-
-    public Book(BookDto livro) {
-        this.title = livro.title();
-
-        this.languages = livro.languages().stream()
+    public Book(BookDto dto) {
+        this.title = dto.title();
+        this.downloadCount = dto.downloadCount();
+        this.languages = dto.languages().stream()
                 .map(code -> Language.fromCode(code)
                         .orElseThrow(() -> new IllegalArgumentException("Idioma desconhecido: " + code)))
                 .collect(Collectors.toList());
-
-        this.downloadCount = livro.downloadCount();
-
-        this.authors = livro.authors().stream()
-                .map(authorDto -> {
-                    Author author = new Author(authorDto);
-                    author.setBook(this); // <-- IMPORTANTE
-                    return author;
-                })
-                .collect(Collectors.toList());
+        // NÃO atribui authors aqui — deixe para o serviço
     }
 
-    public Book(String title, int downloadCount, List<AuthorDto> authorDtos, List<String> languageCodes) {
+    public Book(String title, int i, List<Author> authors, List<Language> languages) {
         this.title = title;
-        this.downloadCount = downloadCount;
-        this.authors = authorDtos.stream()
-                .map(Author::new)
-                .collect(Collectors.toList());
-        this.languages = languageCodes.stream()
-                .map(code -> Language.fromCode(code)
-                        .orElseThrow(() -> new IllegalArgumentException("Idioma desconhecido: " + code)))
-                .collect(Collectors.toList());
-    }
+        this.downloadCount = i;
+        this.authors = authors;
+        this.languages = languages;
 
+
+    }
 
     @Override
     public String toString() {
@@ -87,5 +76,4 @@ public class Book {
                 idiomas
         );
     }
-
 }

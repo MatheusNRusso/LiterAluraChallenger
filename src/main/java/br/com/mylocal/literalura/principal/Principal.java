@@ -17,10 +17,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Component
@@ -71,11 +68,26 @@ public class Principal implements CommandLineRunner {
                 case 3 -> showAuthors();
                 case 4 -> buscarAutoresVivosEntre();
                 case 5 -> buscarLivroIdioma();
-                case 6 -> System.out.println("⚙️ Em breve: Opções extras.");
+                case 6 -> listarTopBook();
+                case 7 -> buscarAutoresNome();
+                case 8 -> menuService.exportarDados();
+                case 9 -> menuService.exibirEstatisticas();
                 case 0 -> System.out.println("Saindo do sistema...");
                 default -> System.out.println("❌ Opção inválida. Tente novamente.");
             }
         } while (opcao != 0);
+    }
+
+    private void buscarAutoresNome() {
+        String name = menuService.readLine("Digite o nome do author: ");
+        List<Author> author = authorRepository.findByNameContainingIgnoreCase(name);
+        System.out.println("Autores encontrados:\n");
+        AtomicInteger index = new AtomicInteger(1);
+        author.forEach(a-> authorService.printDetails(a, index.getAndIncrement()));
+    }
+
+    private void listarTopBook() {
+        bookService.findTop5MostDownloadedBooks();
     }
 
     @Transactional
@@ -94,24 +106,14 @@ public class Principal implements CommandLineRunner {
     public void showAuthors() {
         List<Author> authors = authorRepository.findAll();
         if (authors.isEmpty()) {
-            System.out.println("\n<UNK> Nenhum author encontrado.");
+            System.out.println("Nenhum author encontrado.");
         } else {
-            System.out.println("\n<UNK> Autores encontrados:\n");
+            System.out.println("Autores encontrados:\n");
             AtomicInteger index = new AtomicInteger(1);
             authors.forEach(author -> authorService.printDetails(author, index.getAndIncrement()));
         }
 
     }
-
-    public void saveAuthor(Author author)
-    {
-        authorRepository.save(author);
-    }
-//    public void showAuthors()
-//    {
-//        authorRepository.findAll()
-//                .forEach(l -> System.out.println(l));
-//    }
 
     private void buscarLivroPorTitulo() {
 

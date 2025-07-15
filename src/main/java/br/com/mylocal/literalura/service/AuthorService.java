@@ -1,6 +1,7 @@
 package br.com.mylocal.literalura.service;
 
 import br.com.mylocal.literalura.model.Author;
+import br.com.mylocal.literalura.model.Book;
 import br.com.mylocal.literalura.repository.AuthorRepository;
 import org.springframework.stereotype.Service;
 
@@ -27,24 +28,25 @@ public class AuthorService {
     }
 
     public void printDetails(Author author, int index) {
-        System.out.println("=".repeat(50));
+        System.out.println("=".repeat(65));
         System.out.printf("👤 Autor #%d%n", index);
         System.out.println("Nome: " + author.getName());
 
-        String nascimento = author.getBirthYear() > 0 && author.getBirthYear() > 0
-                ? String.valueOf(author.getBirthYear()) : "?";
-        String falecimento = author.getDeathYear() > 0 && author.getDeathYear() > 0
-                ? String.valueOf(author.getDeathYear()) : "?";
+        String nascimento = author.getBirthYear() > 0 ? String.valueOf(author.getBirthYear()) : "?";
+        String falecimento = author.getDeathYear() > 0 ? String.valueOf(author.getDeathYear()) : "?";
 
         System.out.println("📅 Vida: " + nascimento + " - " + falecimento);
 
-        if (author.getBook() != null) {
-            System.out.println("📖 Livro: " + author.getBook().getTitle());
+        List<Book> books = author.getBooks();
+        if (books != null && !books.isEmpty()) {
+            for (Book book : books) {
+                System.out.println("📖 Livro: " + book.getTitle());
+            }
         } else {
             System.out.println("📖 Livro: (não vinculado)");
         }
 
-        System.out.println("=".repeat(50));
+        System.out.println("=".repeat(65));
     }
 
     public List<Author> listarAutoresVivosEntre(int anoInicial, int anoFinal) {
@@ -59,5 +61,4 @@ public class AuthorService {
                 })
                 .toList();
     }
-
 }

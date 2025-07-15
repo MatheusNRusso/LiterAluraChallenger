@@ -11,9 +11,7 @@ import br.com.mylocal.literalura.util.StringUtils;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -22,54 +20,58 @@ public class BookService {
 
     private final BookRepository bookRepository;
     private final AuthorRepository authorRepository;
+    private MenuService menuService;
 
-    public BookService(BookRepository bookRepository, AuthorRepository authorRepository) {
+    public BookService(BookRepository bookRepository,
+                       AuthorRepository authorRepository,
+                       MenuService menuService) {
         this.bookRepository = bookRepository;
         this.authorRepository = authorRepository;
+        this.menuService = menuService;
     }
 
     @Transactional
     public Book saveIfNotExists(BookDto bookDto) {
-        Optional<Book> existingBook = bookRepository.findByTitle(bookDto.title());
-        if (existingBook.isPresent()) {
-            return existingBook.get();
+        // Verifica se o livro já existe
+        List<Book> existingBooks = bookRepository.findByTitle(bookDto.title());
+        if (!existingBooks.isEmpty()) {
+            return existingBooks.get(0); // Já existe, retorna o primeiro encontrado
         }
 
-        // 1. Converter e persistir autores, associando ao livro mais tarde
+        // 1. Busca ou cria os autores
         List<Author> authors = bookDto.authors()
                 .stream()
-                .map(this::findCreateAuthor)
+                .map(this::findOrCreateAuthor)
                 .collect(Collectors.toList());
 
-        // 2. Mapear idiomas
+        // 2. Converte idiomas (String -> Enum)
         List<Language> languages = bookDto.languages()
                 .stream()
                 .map(code -> Language.fromCode(code)
-                        .orElseThrow(() -> new IllegalArgumentException("Invalid Language code: " + code)))
+                        .orElseThrow(() -> new IllegalArgumentException("Invalid language code: " + code)))
                 .collect(Collectors.toList());
 
-        // 3. Criar o livro, mas ainda sem autores vinculados
-        Book book = new Book(bookDto.title(),
-                bookDto.downloadCount(),
-                bookDto.authors(),
-                bookDto.languages());
-        bookRepository.save(book);
+        // 3. Cria o livro com autores e idiomas
+        Book book = new Book();
+        book.setTitle(bookDto.title());
+        book.setDownloadCount(bookDto.downloadCount());
+        book.setLanguages(languages);
+        book.setAuthors(authors); // JPA vai persistir relação via @ManyToMany
 
-        for (AuthorDto dto : bookDto.authors()) {
-            Author author = findCreateAuthor(dto);
-            if (author.getBook() == null) {
-                author.setBook(book);
-                authorRepository.save(author);
-            }
-        }
-        return book;
+        // 4. Salva o livro
+        return bookRepository.save(book);
     }
 
-    private Author findCreateAuthor(AuthorDto authorDto) {
-        return authorRepository.findByNameAndBirthYearAndDeathYear(
-                authorDto.name(), authorDto.birthYear(), authorDto.deathYear())
-                .orElse(new Author(authorDto));
+
+    private Author findOrCreateAuthor(AuthorDto dto) {
+        return authorRepository
+                .findByNameAndBirthYearAndDeathYear(dto.name(), dto.birthYear(), dto.deathYear())
+                .stream()
+                .findFirst()
+                .orElseGet(() -> authorRepository.save(new Author(dto)));
     }
+
+
 
     public void printDetails(BookDto bookDto, int index) {
         System.out.println("=".repeat(65));
@@ -109,7 +111,7 @@ public class BookService {
 
     public void findBookByTitle(String titulo, List<BookDto> booksBuscados, List<AuthorDto> authorsBuscados) {
         try {
-            List<BookDto> resultados = CatalogoService.findBook(titulo);
+            var resultados = CatalogoService.findBook(titulo);
 
             if (resultados.isEmpty()) {
                 System.out.println("\n⚠️  Nenhum livro encontrado.");
@@ -168,6 +170,26 @@ public class BookService {
             System.out.println("\n🌐 Livros no idioma " + idioma + ":\n");
             AtomicInteger index = new AtomicInteger(1);
             filtrados.forEach(book -> printDetails(book, index.getAndIncrement()));
+        }
+    }
+
+    public void findTop5MostDownloadedBooks() {
+
+        try {
+            List<Book> topBook = bookRepository.findTop5ByOrderByDownloadCountDesc();
+
+            if (topBook.isEmpty()) {
+                System.out.println("Nenhum livro encontrado para exibição.");
+                return;
+            }
+            System.out.println("Top 5 livros mais baixados: \n");
+
+            AtomicInteger count = new AtomicInteger(1);
+            topBook.forEach(b -> printDetails(b, count.getAndIncrement()));
+        }
+        catch (Exception e) {
+            System.out.println("Erro ao buscar os top 10 livro: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 }
